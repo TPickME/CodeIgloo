@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="description" content="Minimalistic pastebin for developers with winter vibe. Share code instantly. No registration, no tracking.">
     <title>❄️ CodeIgloo — холодное хранилище кода</title>
-    <!-- Подсветка синтаксиса Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
     <style>
         * {
             margin: 0;
@@ -16,15 +12,14 @@
             box-sizing: border-box;
         }
         body {
-            background: linear-gradient(145deg, #0b1420 0%, #03060c 100%);
-            font-family: 'Segoe UI', 'JetBrains Mono', monospace;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            background: radial-gradient(circle at 20% 30%, #0a121f, #03060c);
+            font-family: 'Segoe UI', 'JetBrains Mono', 'Fira Code', monospace;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             position: relative;
         }
+        /* снежинки */
         .snow {
             position: fixed;
             top: 0;
@@ -32,7 +27,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 0;
         }
         .snow i {
             position: absolute;
@@ -44,195 +39,221 @@
         @keyframes fall {
             to { transform: translateY(100vh); }
         }
-        .glass {
+        /* главный интерфейс */
+        .app {
             position: relative;
             z-index: 10;
-            max-width: 1100px;
-            width: 100%;
-            background: rgba(20, 30, 45, 0.85);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(2px);
+        }
+        /* верхняя панель */
+        .navbar {
+            background: rgba(10, 20, 35, 0.7);
             backdrop-filter: blur(12px);
-            border-radius: 48px;
-            border: 1px solid rgba(100, 150, 200, 0.4);
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
-            overflow: hidden;
-        }
-        .header {
-            padding: 28px 24px;
-            text-align: center;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 1px solid rgba(100, 150, 200, 0.3);
-            background: rgba(10, 20, 35, 0.5);
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .header h1 {
-            font-size: 3rem;
-            background: linear-gradient(135deg, #ffffff, #80b0ff);
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #e0e0e0, #80b0ff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
         .badge {
-            display: inline-flex;
+            display: flex;
             gap: 12px;
-            margin-top: 14px;
-            justify-content: center;
-            flex-wrap: wrap;
         }
         .badge span {
             background: rgba(0,0,0,0.5);
-            padding: 6px 16px;
+            padding: 6px 14px;
             border-radius: 40px;
-            font-size: 0.8rem;
-            color: #b0d4ff;
-            border: 1px solid rgba(100,150,200,0.3);
+            font-size: 0.75rem;
+            border: 1px solid rgba(100,150,200,0.4);
         }
-        .main-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            padding: 28px;
-        }
-        .editor-panel {
-            flex: 2;
-            min-width: 250px;
-        }
-        .sidebar {
+        .main-container {
             flex: 1;
-            min-width: 220px;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+        }
+        /* редактор — занимает почти всё место */
+        .editor-area {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            background: rgba(15, 25, 40, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            overflow: hidden;
+        }
+        .editor-header {
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.3);
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(100,150,200,0.3);
         }
         textarea {
-            width: 100%;
-            height: 380px;
-            background: rgba(10, 20, 35, 0.95);
-            border: 1px solid #2c4a6e;
+            flex: 1;
+            background: rgba(10, 20, 35, 0.9);
             color: #e0e0e0;
-            padding: 18px;
-            border-radius: 28px;
+            border: none;
+            padding: 20px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 15px;
-            line-height: 1.5;
-            resize: vertical;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
         }
         textarea:focus {
-            outline: none;
-            border-color: #80b0ff;
-            box-shadow: 0 0 12px rgba(128,176,255,0.4);
+            background: rgba(10, 20, 35, 1);
+        }
+        .action-buttons {
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            border-top: 1px solid rgba(100,150,200,0.3);
         }
         button {
             background: linear-gradient(135deg, #2a4a6e, #1a3a5a);
             border: none;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: 40px;
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
-            margin-top: 20px;
-            width: 100%;
-            font-size: 1rem;
+            transition: 0.2s;
         }
         button:hover {
             background: #3a6a9e;
-            box-shadow: 0 0 18px #80b0ff;
             transform: scale(1.02);
         }
-        .result {
-            margin-top: 24px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 28px;
-            padding: 20px;
-            text-align: center;
+        .result-panel {
+            margin-top: 12px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 24px;
+            padding: 12px 20px;
             display: none;
-            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .result a {
+        .result-panel a {
             color: #80b0ff;
-            text-decoration: none;
             word-break: break-all;
-            font-size: 0.9rem;
         }
-        .promo-box {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 28px;
+        /* правая панель с проектами */
+        .projects-panel {
+            flex: 1;
+            background: rgba(15, 25, 40, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .project-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 24px;
+            padding: 16px;
             text-align: center;
-            border: 1px solid rgba(100,150,200,0.3);
-            backdrop-filter: blur(4px);
+            transition: 0.2s;
         }
-        .promo-box h3 {
-            color: #b0d4ff;
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-        }
-        .promo-box a {
-            display: inline-block;
-            margin: 5px 0;
+        .project-card a {
             color: #b0d4ff;
             text-decoration: none;
-            font-weight: 500;
-        }
-        .promo-box a:hover {
-            text-decoration: underline;
-        }
-        .divider {
-            height: 1px;
-            background: rgba(100,150,200,0.3);
-            margin: 16px 0;
+            font-weight: bold;
         }
         .footer {
-            padding: 18px;
             text-align: center;
-            border-top: 1px solid rgba(100, 150, 200, 0.3);
-            font-size: 0.75rem;
-            color: #6c8eb0;
+            padding: 10px;
+            font-size: 0.7rem;
+            border-top: 1px solid rgba(100,150,200,0.2);
+            background: rgba(10,20,35,0.5);
         }
         @media (max-width: 800px) {
-            .main-content { flex-direction: column; }
-            textarea { height: 280px; }
-            .header h1 { font-size: 2.2rem; }
+            .main-container { flex-direction: column; }
+            .editor-area { min-height: 60vh; }
+            .navbar { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
 <div class="snow" id="snow"></div>
-<div class="glass">
-    <div class="header">
-        <h1>❄️ CodeIgloo</h1>
+<div class="app">
+    <div class="navbar">
+        <div class="logo"><h1>❄️ CodeIgloo</h1></div>
         <div class="badge">
             <span>⚡ Нет регистрации</span>
             <span>📋 Копируй ссылку</span>
             <span>🧊 Зимний вайб</span>
         </div>
     </div>
-    <div class="main-content">
-        <div class="editor-panel">
-            <textarea id="codeInput" placeholder='Вставь сюда код…&#10;Например:&#10;&#10;<?php&#10;echo "Привет, мир!";&#10;?>'></textarea>
-            <button id="saveBtn">🧊 Сохранить в Igloo</button>
-            <div id="result" class="result">
-                <p>✨ Ссылка на твой код (сохрани или отправь):</p>
+    <div class="main-container">
+        <!-- левая область: редактор -->
+        <div class="editor-area">
+            <div class="editor-header">📄 Редактор кода — пиши или вставляй</div>
+            <textarea id="codeInput" placeholder='<?php
+echo "Привет, мир!";
+?>'></textarea>
+            <div class="action-buttons">
+                <button id="saveBtn">🧊 Сохранить в Igloo</button>
+                <button id="copyBtn" style="display: none;">📋 Копировать ссылку</button>
+            </div>
+            <div id="resultPanel" class="result-panel">
+                <span>✨ Готово! Поделись ссылкой:</span>
                 <a href="#" id="resultLink" target="_blank">ссылка</a>
-                <button id="copyBtn" style="margin-top: 12px; width: auto; padding: 10px 24px;">📋 Копировать ссылку</button>
+                <button id="copyResultBtn" style="padding: 6px 16px;">📋 Копировать</button>
             </div>
         </div>
-        <div class="sidebar">
-            <div class="promo-box">
-                <h3>❄️ TPickME</h3>
-                <p>проекты с холодным кодом и горячим сердцем</p>
-                <div class="divider"></div>
-                <a href="https://github.com/web-pentest/DarkVPN">🌑 DarkVPN</a><br>
-                <a href="https://github.com/web-pentest/TSandCode">⚡ TSandCode</a><br>
-                <a href="https://github.com/web-pentest/PHPNoFluff">🐘 PHPNoFluff</a>
-                <div class="divider"></div>
-                <a href="https://github.com/TPickME">🐙 TPickME на GitHub</a>
+        <!-- правая панель: проекты TPickME -->
+        <div class="projects-panel">
+            <div class="project-card">
+                <h3>🌑 DarkVPN</h3>
+                <p>400+ VLESS+Reality прокси</p>
+                <a href="https://web-pentest.github.io/Web-DarkVPN/" target="_blank">Открыть →</a>
+            </div>
+            <div class="project-card">
+                <h3>⚡ TSandCode</h3>
+                <p>онлайн-редактор HTML/CSS/JS</p>
+                <a href="https://web-pentest.github.io/TSandCode/" target="_blank">Открыть →</a>
+            </div>
+            <div class="project-card">
+                <h3>🐘 PHPNoFluff</h3>
+                <p>учебник PHP без воды</p>
+                <a href="https://github.com/web-pentest/PHPNoFluff" target="_blank">GitHub →</a>
+            </div>
+            <div class="project-card">
+                <h3>🐙 TPickME</h3>
+                <p>организация на GitHub</p>
+                <a href="https://github.com/TPickME" target="_blank">Перейти →</a>
             </div>
         </div>
     </div>
-    <div class="footer">
-        ❄️ open-source • никакой рекламы • без слежки • код не хранится на сервере
-    </div>
+    <div class="footer">❄️ open-source • никакой рекламы • без слежки • код не хранится на сервере</div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
+<script>hljs.registerLanguage('php', window.hljsDefinePhp);</script>
 <script>
+    // снежинки
     function createSnow() {
         const snowDiv = document.getElementById('snow');
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0; i < 150; i++) {
             const flake = document.createElement('i');
             flake.style.left = Math.random() * 100 + '%';
             flake.style.width = flake.style.height = Math.random() * 6 + 2 + 'px';
@@ -245,9 +266,10 @@
 
     const saveBtn = document.getElementById('saveBtn');
     const codeInput = document.getElementById('codeInput');
-    const resultDiv = document.getElementById('result');
+    const resultPanel = document.getElementById('resultPanel');
     const resultLink = document.getElementById('resultLink');
-    const copyBtn = document.getElementById('copyBtn');
+    const copyResultBtn = document.getElementById('copyResultBtn');
+    const copyBtnMain = document.getElementById('copyBtn');
 
     function getCurrentUrl() {
         return `${window.location.origin}${window.location.pathname}`;
@@ -263,15 +285,13 @@
         let url = `${getCurrentUrl()}?code=${encoded}`;
         resultLink.href = url;
         resultLink.innerText = url;
-        resultDiv.style.display = 'block';
-        resultDiv.scrollIntoView({ behavior: 'smooth' });
+        resultPanel.style.display = 'flex';
+        resultPanel.scrollIntoView({ behavior: 'smooth' });
     });
 
-    copyBtn.addEventListener('click', () => {
+    copyResultBtn.addEventListener('click', () => {
         const link = resultLink.href;
-        navigator.clipboard.writeText(link).then(() => {
-            alert('✅ Ссылка скопирована!');
-        });
+        navigator.clipboard.writeText(link).then(() => alert('✅ Ссылка скопирована!'));
     });
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -280,11 +300,8 @@
         try {
             let decoded = decodeURIComponent(escape(atob(encodedCode)));
             codeInput.value = decoded;
-            resultDiv.style.display = 'none';
-            hljs.highlightAll();
-        } catch(e) {
-            console.log('Ошибка декодирования');
-        }
+            resultPanel.style.display = 'none';
+        } catch(e) { console.log('Ошибка декодирования'); }
     }
 </script>
 </body>
