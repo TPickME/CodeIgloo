@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❄️ CodeIgloo — хранилище кода</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #0b1420 0%, #03060c 100%);
+            font-family: 'Segoe UI', 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        /* снежинки */
+        .snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .snow i {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+        .glass {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            width: 100%;
+            background: rgba(20, 30, 45, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .header {
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid rgba(100, 150, 200, 0.3);
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #e0e0e0, #80b0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .content {
+            padding: 24px;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: rgba(10, 20, 35, 0.8);
+            border: 1px solid #2c4a6e;
+            color: #e0e0e0;
+            padding: 16px;
+            border-radius: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #80b0ff;
+        }
+        button {
+            background: linear-gradient(135deg, #2a4a6e, #1a3a5a);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background: #3a6a9e;
+            box-shadow: 0 0 15px #80b0ff;
+        }
+        .result {
+            margin-top: 24px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            display: none;
+        }
+        .result a {
+            color: #80b0ff;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .footer {
+            padding: 16px;
+            text-align: center;
+            border-top: 1px solid rgba(100, 150, 200, 0.3);
+            font-size: 0.7rem;
+            color: #6c8eb0;
+        }
+    </style>
+</head>
+<body>
+<div class="snow" id="snow"></div>
+<div class="glass">
+    <div class="header">
+        <h1>❄️ CodeIgloo</h1>
+        <p>хранилище кода — вставь, сохрани, поделись</p>
+    </div>
+    <div class="content">
+        <textarea id="codeInput" placeholder="Вставь свой код сюда..."></textarea>
+        <button id="saveBtn">🧊 Сохранить в Igloo</button>
+        <div id="result" class="result">
+            <p>✨ Готово! Твой код здесь:</p>
+            <a href="#" id="resultLink" target="_blank">ссылка</a>
+        </div>
+    </div>
+    <div class="footer">
+        ❄️ TPickME — холодный код, горячие идеи
+    </div>
+</div>
+<script>
+    // создаём снежинки
+    function createSnow() {
+        const snowDiv = document.getElementById('snow');
+        for (let i = 0; i < 100; i++) {
+            const flake = document.createElement('i');
+            flake.style.left = Math.random() * 100 + '%';
+            flake.style.width = flake.style.height = Math.random() * 5 + 2 + 'px';
+            flake.style.animationDuration = Math.random() * 4 + 3 + 's';
+            flake.style.animationDelay = Math.random() * 5 + 's';
+            snowDiv.appendChild(flake);
+        }
+    }
+    createSnow();
+
+    const saveBtn = document.getElementById('saveBtn');
+    const codeInput = document.getElementById('codeInput');
+    const resultDiv = document.getElementById('result');
+    const resultLink = document.getElementById('resultLink');
+
+    saveBtn.addEventListener('click', () => {
+        let code = codeInput.value.trim();
+        if (!code) {
+            alert('Введи код, бро!');
+            return;
+        }
+        // шифруем код в base64 для хранения в URL
+        let encoded = btoa(unescape(encodeURIComponent(code)));
+        let url = `${window.location.origin}${window.location.pathname}?code=${encoded}`;
+        resultLink.href = url;
+        resultDiv.style.display = 'block';
+        // прокручиваем к результату
+        resultDiv.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // проверяем URL при загрузке
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedCode = urlParams.get('code');
+    if (encodedCode) {
+        try {
+            let decoded = decodeURIComponent(escape(atob(encodedCode)));
+            codeInput.value = decoded;
+            resultDiv.style.display = 'none';
+        } catch(e) {
+            console.log('Ошибка декодирования');
+        }
+    }
+</script>
+</body>
+</html>
