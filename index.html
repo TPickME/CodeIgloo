@@ -2,8 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❄️ CodeIgloo — хранилище кода</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Minimalistic pastebin for developers with winter vibe. Share code instantly. No registration, no tracking.">
+    <title>❄️ CodeIgloo — холодное хранилище кода</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +21,6 @@
             padding: 20px;
             position: relative;
         }
-        /* снежинки */
         .snow {
             position: fixed;
             top: 0;
@@ -43,12 +43,12 @@
         .glass {
             position: relative;
             z-index: 10;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
-            background: rgba(20, 30, 45, 0.7);
+            background: rgba(20, 30, 45, 0.75);
             backdrop-filter: blur(12px);
             border-radius: 48px;
-            border: 1px solid rgba(100, 150, 200, 0.3);
+            border: 1px solid rgba(100, 150, 200, 0.4);
             box-shadow: 0 0 40px rgba(0,0,0,0.5);
             overflow: hidden;
         }
@@ -56,21 +56,36 @@
             padding: 24px;
             text-align: center;
             border-bottom: 1px solid rgba(100, 150, 200, 0.3);
+            background: rgba(10, 20, 35, 0.5);
         }
         .header h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, #e0e0e0, #80b0ff);
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #ffffff, #80b0ff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
+        .badge {
+            display: inline-flex;
+            gap: 12px;
+            margin-top: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .badge span {
+            background: rgba(0,0,0,0.4);
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            color: #b0d4ff;
+        }
         .content {
-            padding: 24px;
+            padding: 28px;
         }
         textarea {
             width: 100%;
-            height: 250px;
-            background: rgba(10, 20, 35, 0.8);
+            height: 280px;
+            background: rgba(10, 20, 35, 0.9);
             border: 1px solid #2c4a6e;
             color: #e0e0e0;
             padding: 16px;
@@ -82,35 +97,54 @@
         textarea:focus {
             outline: none;
             border-color: #80b0ff;
+            box-shadow: 0 0 10px rgba(128,176,255,0.3);
         }
         button {
             background: linear-gradient(135deg, #2a4a6e, #1a3a5a);
             border: none;
-            padding: 12px 28px;
+            padding: 14px 28px;
             border-radius: 40px;
             color: white;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
-            margin-top: 16px;
+            margin-top: 20px;
             width: 100%;
+            font-size: 1rem;
         }
         button:hover {
             background: #3a6a9e;
             box-shadow: 0 0 15px #80b0ff;
+            transform: scale(1.02);
         }
         .result {
-            margin-top: 24px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 24px;
-            padding: 20px;
+            margin-top: 28px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 28px;
+            padding: 24px;
             text-align: center;
             display: none;
+            backdrop-filter: blur(4px);
         }
         .result a {
             color: #80b0ff;
             text-decoration: none;
             word-break: break-all;
+            font-size: 0.9rem;
+        }
+        .result a:hover {
+            text-decoration: underline;
+        }
+        .promo {
+            margin-top: 24px;
+            padding: 16px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 28px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .promo a {
+            color: #b0d4ff;
         }
         .footer {
             padding: 16px;
@@ -119,6 +153,10 @@
             font-size: 0.7rem;
             color: #6c8eb0;
         }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2rem; }
+            textarea { height: 200px; }
+        }
     </style>
 </head>
 <body>
@@ -126,22 +164,30 @@
 <div class="glass">
     <div class="header">
         <h1>❄️ CodeIgloo</h1>
-        <p>хранилище кода — вставь, сохрани, поделись</p>
+        <div class="badge">
+            <span>⚡ Нет регистрации</span>
+            <span>📋 Копируй ссылку</span>
+            <span>🧊 Зимний вайб</span>
+        </div>
     </div>
     <div class="content">
-        <textarea id="codeInput" placeholder="Вставь свой код сюда..."></textarea>
+        <textarea id="codeInput" placeholder='Вставь сюда код…&#10;Например:&#10;&#10;echo "Привет, мир!";'></textarea>
         <button id="saveBtn">🧊 Сохранить в Igloo</button>
         <div id="result" class="result">
-            <p>✨ Готово! Твой код здесь:</p>
+            <p>✨ Ссылка на твой код (сохрани или отправь):</p>
             <a href="#" id="resultLink" target="_blank">ссылка</a>
+            <button id="copyBtn" style="margin-top: 12px; width: auto; padding: 8px 20px;">📋 Копировать ссылку</button>
+        </div>
+        <div class="promo">
+            🐙 <strong>TPickME</strong> — проекты с холодным кодом и горячим сердцем<br>
+            🔥 <a href="https://github.com/web-pentest/DarkVPN">DarkVPN</a> • <a href="https://github.com/web-pentest/TSandCode">TSandCode</a> • <a href="https://github.com/web-pentest/PHPNoFluff">PHPNoFluff</a>
         </div>
     </div>
     <div class="footer">
-        ❄️ TPickME — холодный код, горячие идеи
+        ❄️ open-source • никакой рекламы • без слежки
     </div>
 </div>
 <script>
-    // создаём снежинки
     function createSnow() {
         const snowDiv = document.getElementById('snow');
         for (let i = 0; i < 100; i++) {
@@ -159,6 +205,11 @@
     const codeInput = document.getElementById('codeInput');
     const resultDiv = document.getElementById('result');
     const resultLink = document.getElementById('resultLink');
+    const copyBtn = document.getElementById('copyBtn');
+
+    function getCurrentUrl() {
+        return `${window.location.origin}${window.location.pathname}`;
+    }
 
     saveBtn.addEventListener('click', () => {
         let code = codeInput.value.trim();
@@ -166,16 +217,21 @@
             alert('Введи код, бро!');
             return;
         }
-        // шифруем код в base64 для хранения в URL
         let encoded = btoa(unescape(encodeURIComponent(code)));
-        let url = `${window.location.origin}${window.location.pathname}?code=${encoded}`;
+        let url = `${getCurrentUrl()}?code=${encoded}`;
         resultLink.href = url;
+        resultLink.innerText = url;
         resultDiv.style.display = 'block';
-        // прокручиваем к результату
         resultDiv.scrollIntoView({ behavior: 'smooth' });
     });
 
-    // проверяем URL при загрузке
+    copyBtn.addEventListener('click', () => {
+        const link = resultLink.href;
+        navigator.clipboard.writeText(link).then(() => {
+            alert('✅ Ссылка скопирована!');
+        });
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     const encodedCode = urlParams.get('code');
     if (encodedCode) {
