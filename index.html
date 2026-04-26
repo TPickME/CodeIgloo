@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>❄️ CodeIgloo — холодное хранилище кода</title>
+    <title>❄️ CodeIgloo — киберпанк-хранилище кода</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <style>
         * {
@@ -12,14 +12,26 @@
             box-sizing: border-box;
         }
         body {
-            background: radial-gradient(circle at 20% 30%, #0a121f, #03060c);
-            font-family: 'Segoe UI', 'JetBrains Mono', 'Fira Code', monospace;
+            background: radial-gradient(circle at 20% 30%, #0a0f1f, #010101);
+            font-family: 'JetBrains Mono', 'Segoe UI', monospace;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             position: relative;
         }
-        /* снежинки */
+        /* неоновый глитч фон */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,255,255,0.02) 0px, rgba(255,0,255,0.02) 2px, transparent 2px, transparent 8px);
+            pointer-events: none;
+            z-index: 1;
+        }
+        /* снег с эффектом пикселей */
         .snow {
             position: fixed;
             top: 0;
@@ -27,13 +39,14 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
+            z-index: 2;
         }
         .snow i {
             position: absolute;
-            background: white;
+            background: #0ff;
+            box-shadow: 0 0 4px #0ff;
             border-radius: 50%;
-            opacity: 0.3;
+            opacity: 0.5;
             animation: fall linear infinite;
         }
         @keyframes fall {
@@ -47,37 +60,35 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
         }
-        /* верхняя панель */
+        /* шапка с неоном */
         .navbar {
-            background: rgba(10, 20, 35, 0.7);
-            backdrop-filter: blur(12px);
-            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(16px);
+            padding: 16px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(100, 150, 200, 0.3);
+            border-bottom: 2px solid #0ff;
+            box-shadow: 0 0 15px rgba(0,255,255,0.2);
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 16px;
         }
         .logo h1 {
-            font-size: 1.8rem;
-            background: linear-gradient(135deg, #e0e0e0, #80b0ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .badge {
-            display: flex;
-            gap: 12px;
+            font-size: 2rem;
+            text-shadow: 0 0 8px #0ff, 0 0 2px #0ff;
+            color: #0ff;
+            letter-spacing: 2px;
         }
         .badge span {
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             padding: 6px 14px;
             border-radius: 40px;
-            font-size: 0.75rem;
-            border: 1px solid rgba(100,150,200,0.4);
+            font-size: 0.7rem;
+            border: 1px solid #0ff;
+            color: #0ff;
+            box-shadow: 0 0 4px #0ff;
         }
         .main-container {
             flex: 1;
@@ -86,108 +97,127 @@
             gap: 20px;
             overflow: hidden;
         }
-        /* редактор — занимает почти всё место */
+        /* левая зона редактора */
         .editor-area {
             flex: 3;
             display: flex;
             flex-direction: column;
-            background: rgba(15, 25, 40, 0.6);
-            backdrop-filter: blur(8px);
-            border-radius: 32px;
-            border: 1px solid rgba(100, 150, 200, 0.3);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid #0ff;
+            box-shadow: 0 0 20px rgba(0,255,255,0.2);
             overflow: hidden;
         }
         .editor-header {
-            padding: 12px 20px;
-            background: rgba(0,0,0,0.3);
+            padding: 14px 20px;
+            background: #000000aa;
             font-size: 0.8rem;
-            border-bottom: 1px solid rgba(100,150,200,0.3);
+            border-bottom: 1px solid #0ff;
+            color: #0ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         textarea {
             flex: 1;
-            background: rgba(10, 20, 35, 0.9);
-            color: #e0e0e0;
+            background: #050a12ee;
+            color: #ccf;
             border: none;
             padding: 20px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.6;
             resize: none;
             outline: none;
         }
-        textarea:focus {
-            background: rgba(10, 20, 35, 1);
-        }
         .action-buttons {
             padding: 16px;
             display: flex;
-            gap: 16px;
-            border-top: 1px solid rgba(100,150,200,0.3);
+            gap: 20px;
+            border-top: 1px solid #0ff;
         }
         button {
-            background: linear-gradient(135deg, #2a4a6e, #1a3a5a);
-            border: none;
-            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid #0ff;
+            padding: 10px 24px;
             border-radius: 40px;
-            color: white;
+            color: #0ff;
             font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
         }
         button:hover {
-            background: #3a6a9e;
+            background: #0ff;
+            color: black;
+            box-shadow: 0 0 20px #0ff;
             transform: scale(1.02);
         }
         .result-panel {
             margin-top: 12px;
-            background: rgba(0,0,0,0.4);
+            background: #000000aa;
             border-radius: 24px;
             padding: 12px 20px;
             display: none;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            border: 1px solid #0ff;
         }
         .result-panel a {
-            color: #80b0ff;
+            color: #0ff;
             word-break: break-all;
         }
-        /* правая панель с проектами */
+        /* правая панель — карточки проектов (киберпанк стиль) */
         .projects-panel {
             flex: 1;
-            background: rgba(15, 25, 40, 0.6);
-            backdrop-filter: blur(8px);
-            border-radius: 32px;
-            border: 1px solid rgba(100, 150, 200, 0.3);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid #f0f;
+            box-shadow: 0 0 20px rgba(255,0,255,0.2);
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
         .project-card {
-            background: rgba(0,0,0,0.3);
-            border-radius: 24px;
+            background: #00000088;
+            border-radius: 20px;
             padding: 16px;
             text-align: center;
+            border: 1px solid #0ff;
             transition: 0.2s;
         }
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 15px #0ff;
+        }
+        .project-card h3 {
+            color: #f0f;
+            text-shadow: 0 0 5px #f0f;
+            margin-bottom: 8px;
+        }
+        .project-card p {
+            color: #ccf;
+            font-size: 0.8rem;
+        }
         .project-card a {
-            color: #b0d4ff;
+            color: #0ff;
             text-decoration: none;
-            font-weight: bold;
         }
         .footer {
             text-align: center;
-            padding: 10px;
+            padding: 12px;
             font-size: 0.7rem;
-            border-top: 1px solid rgba(100,150,200,0.2);
-            background: rgba(10,20,35,0.5);
+            border-top: 1px solid #0ff;
+            background: rgba(0,0,0,0.7);
+            color: #0ff;
         }
         @media (max-width: 800px) {
             .main-container { flex-direction: column; }
-            .editor-area { min-height: 60vh; }
-            .navbar { flex-direction: column; text-align: center; }
+            .editor-area { min-height: 55vh; }
         }
     </style>
 </head>
@@ -197,67 +227,63 @@
     <div class="navbar">
         <div class="logo"><h1>❄️ CodeIgloo</h1></div>
         <div class="badge">
-            <span>⚡ Нет регистрации</span>
-            <span>📋 Копируй ссылку</span>
-            <span>🧊 Зимний вайб</span>
+            <span>⚡ НЕТ РЕГИСТРАЦИИ</span>
+            <span>📋 КОПИРУЙ ССЫЛКУ</span>
+            <span>🧊 ЗИМНИЙ КИБЕРПАНК</span>
         </div>
     </div>
     <div class="main-container">
-        <!-- левая область: редактор -->
         <div class="editor-area">
-            <div class="editor-header">📄 Редактор кода — пиши или вставляй</div>
+            <div class="editor-header">❄️ РЕДАКТОР КОДА — ВСТАВЛЯЙ, СОХРАНЯЙ</div>
             <textarea id="codeInput" placeholder='<?php
 echo "Привет, мир!";
 ?>'></textarea>
             <div class="action-buttons">
-                <button id="saveBtn">🧊 Сохранить в Igloo</button>
-                <button id="copyBtn" style="display: none;">📋 Копировать ссылку</button>
+                <button id="saveBtn">🧊 СОХРАНИТЬ</button>
+                <button id="copyBtn" style="display: none;">📋 КОПИРОВАТЬ</button>
             </div>
             <div id="resultPanel" class="result-panel">
-                <span>✨ Готово! Поделись ссылкой:</span>
+                <span>✨ ГОТОВО! ССЫЛКА:</span>
                 <a href="#" id="resultLink" target="_blank">ссылка</a>
-                <button id="copyResultBtn" style="padding: 6px 16px;">📋 Копировать</button>
+                <button id="copyResultBtn">📋 КОПИРОВАТЬ</button>
             </div>
         </div>
-        <!-- правая панель: проекты TPickME -->
         <div class="projects-panel">
             <div class="project-card">
                 <h3>🌑 DarkVPN</h3>
                 <p>400+ VLESS+Reality прокси</p>
-                <a href="https://web-pentest.github.io/Web-DarkVPN/" target="_blank">Открыть →</a>
+                <a href="https://web-pentest.github.io/Web-DarkVPN/" target="_blank">ОТКРЫТЬ →</a>
             </div>
             <div class="project-card">
                 <h3>⚡ TSandCode</h3>
                 <p>онлайн-редактор HTML/CSS/JS</p>
-                <a href="https://web-pentest.github.io/TSandCode/" target="_blank">Открыть →</a>
+                <a href="https://web-pentest.github.io/TSandCode/" target="_blank">ОТКРЫТЬ →</a>
             </div>
             <div class="project-card">
                 <h3>🐘 PHPNoFluff</h3>
-                <p>учебник PHP без воды</p>
-                <a href="https://github.com/web-pentest/PHPNoFluff" target="_blank">GitHub →</a>
+                <p>учебник PHP — без воды</p>
+                <a href="https://github.com/web-pentest/PHPNoFluff" target="_blank">GITHUB →</a>
             </div>
             <div class="project-card">
                 <h3>🐙 TPickME</h3>
-                <p>организация на GitHub</p>
-                <a href="https://github.com/TPickME" target="_blank">Перейти →</a>
+                <p>наша организация на GitHub</p>
+                <a href="https://github.com/TPickME" target="_blank">ПЕРЕЙТИ →</a>
             </div>
         </div>
     </div>
-    <div class="footer">❄️ open-source • никакой рекламы • без слежки • код не хранится на сервере</div>
+    <div class="footer">❄️ OPEN SOURCE • БЕЗ СЛЕЖКИ • НИКАКОЙ РЕКЛАМЫ • ТОЛЬКО КИБЕРПАНК</div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
 <script>hljs.registerLanguage('php', window.hljsDefinePhp);</script>
 <script>
-    // снежинки
     function createSnow() {
         const snowDiv = document.getElementById('snow');
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 140; i++) {
             const flake = document.createElement('i');
             flake.style.left = Math.random() * 100 + '%';
-            flake.style.width = flake.style.height = Math.random() * 6 + 2 + 'px';
-            flake.style.animationDuration = Math.random() * 5 + 3 + 's';
+            flake.style.width = flake.style.height = Math.random() * 5 + 2 + 'px';
+            flake.style.animationDuration = Math.random() * 4 + 3 + 's';
             flake.style.animationDelay = Math.random() * 5 + 's';
             snowDiv.appendChild(flake);
         }
@@ -269,7 +295,6 @@ echo "Привет, мир!";
     const resultPanel = document.getElementById('resultPanel');
     const resultLink = document.getElementById('resultLink');
     const copyResultBtn = document.getElementById('copyResultBtn');
-    const copyBtnMain = document.getElementById('copyBtn');
 
     function getCurrentUrl() {
         return `${window.location.origin}${window.location.pathname}`;
@@ -290,8 +315,7 @@ echo "Привет, мир!";
     });
 
     copyResultBtn.addEventListener('click', () => {
-        const link = resultLink.href;
-        navigator.clipboard.writeText(link).then(() => alert('✅ Ссылка скопирована!'));
+        navigator.clipboard.writeText(resultLink.href).then(() => alert('✅ Ссылка скопирована!'));
     });
 
     const urlParams = new URLSearchParams(window.location.search);
