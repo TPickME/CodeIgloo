@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta name="description" content="Minimalistic pastebin for developers with winter vibe. Share code instantly. No registration, no tracking.">
     <title>❄️ CodeIgloo — холодное хранилище кода</title>
+    <!-- Подсветка синтаксиса Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <style>
         * {
             margin: 0;
@@ -43,9 +47,9 @@
         .glass {
             position: relative;
             z-index: 10;
-            max-width: 900px;
+            max-width: 1100px;
             width: 100%;
-            background: rgba(20, 30, 45, 0.75);
+            background: rgba(20, 30, 45, 0.85);
             backdrop-filter: blur(12px);
             border-radius: 48px;
             border: 1px solid rgba(100, 150, 200, 0.4);
@@ -53,13 +57,13 @@
             overflow: hidden;
         }
         .header {
-            padding: 24px;
+            padding: 28px 24px;
             text-align: center;
             border-bottom: 1px solid rgba(100, 150, 200, 0.3);
             background: rgba(10, 20, 35, 0.5);
         }
         .header h1 {
-            font-size: 2.8rem;
+            font-size: 3rem;
             background: linear-gradient(135deg, #ffffff, #80b0ff);
             -webkit-background-clip: text;
             background-clip: text;
@@ -68,36 +72,49 @@
         .badge {
             display: inline-flex;
             gap: 12px;
-            margin-top: 12px;
+            margin-top: 14px;
             justify-content: center;
             flex-wrap: wrap;
         }
         .badge span {
-            background: rgba(0,0,0,0.4);
-            padding: 4px 12px;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 16px;
             border-radius: 40px;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             color: #b0d4ff;
+            border: 1px solid rgba(100,150,200,0.3);
         }
-        .content {
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
             padding: 28px;
+        }
+        .editor-panel {
+            flex: 2;
+            min-width: 250px;
+        }
+        .sidebar {
+            flex: 1;
+            min-width: 220px;
         }
         textarea {
             width: 100%;
-            height: 280px;
-            background: rgba(10, 20, 35, 0.9);
+            height: 380px;
+            background: rgba(10, 20, 35, 0.95);
             border: 1px solid #2c4a6e;
             color: #e0e0e0;
-            padding: 16px;
-            border-radius: 24px;
+            padding: 18px;
+            border-radius: 28px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
+            font-size: 15px;
+            line-height: 1.5;
             resize: vertical;
         }
         textarea:focus {
             outline: none;
             border-color: #80b0ff;
-            box-shadow: 0 0 10px rgba(128,176,255,0.3);
+            box-shadow: 0 0 12px rgba(128,176,255,0.4);
         }
         button {
             background: linear-gradient(135deg, #2a4a6e, #1a3a5a);
@@ -114,14 +131,14 @@
         }
         button:hover {
             background: #3a6a9e;
-            box-shadow: 0 0 15px #80b0ff;
+            box-shadow: 0 0 18px #80b0ff;
             transform: scale(1.02);
         }
         .result {
-            margin-top: 28px;
-            background: rgba(0,0,0,0.4);
+            margin-top: 24px;
+            background: rgba(0,0,0,0.5);
             border-radius: 28px;
-            padding: 24px;
+            padding: 20px;
             text-align: center;
             display: none;
             backdrop-filter: blur(4px);
@@ -132,30 +149,45 @@
             word-break: break-all;
             font-size: 0.9rem;
         }
-        .result a:hover {
+        .promo-box {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 28px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(100,150,200,0.3);
+            backdrop-filter: blur(4px);
+        }
+        .promo-box h3 {
+            color: #b0d4ff;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+        .promo-box a {
+            display: inline-block;
+            margin: 5px 0;
+            color: #b0d4ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .promo-box a:hover {
             text-decoration: underline;
         }
-        .promo {
-            margin-top: 24px;
-            padding: 16px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 28px;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-        .promo a {
-            color: #b0d4ff;
+        .divider {
+            height: 1px;
+            background: rgba(100,150,200,0.3);
+            margin: 16px 0;
         }
         .footer {
-            padding: 16px;
+            padding: 18px;
             text-align: center;
             border-top: 1px solid rgba(100, 150, 200, 0.3);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #6c8eb0;
         }
-        @media (max-width: 600px) {
-            .header h1 { font-size: 2rem; }
-            textarea { height: 200px; }
+        @media (max-width: 800px) {
+            .main-content { flex-direction: column; }
+            textarea { height: 280px; }
+            .header h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -170,31 +202,41 @@
             <span>🧊 Зимний вайб</span>
         </div>
     </div>
-    <div class="content">
-        <textarea id="codeInput" placeholder='Вставь сюда код…&#10;Например:&#10;&#10;echo "Привет, мир!";'></textarea>
-        <button id="saveBtn">🧊 Сохранить в Igloo</button>
-        <div id="result" class="result">
-            <p>✨ Ссылка на твой код (сохрани или отправь):</p>
-            <a href="#" id="resultLink" target="_blank">ссылка</a>
-            <button id="copyBtn" style="margin-top: 12px; width: auto; padding: 8px 20px;">📋 Копировать ссылку</button>
+    <div class="main-content">
+        <div class="editor-panel">
+            <textarea id="codeInput" placeholder='Вставь сюда код…&#10;Например:&#10;&#10;<?php&#10;echo "Привет, мир!";&#10;?>'></textarea>
+            <button id="saveBtn">🧊 Сохранить в Igloo</button>
+            <div id="result" class="result">
+                <p>✨ Ссылка на твой код (сохрани или отправь):</p>
+                <a href="#" id="resultLink" target="_blank">ссылка</a>
+                <button id="copyBtn" style="margin-top: 12px; width: auto; padding: 10px 24px;">📋 Копировать ссылку</button>
+            </div>
         </div>
-        <div class="promo">
-            🐙 <strong>TPickME</strong> — проекты с холодным кодом и горячим сердцем<br>
-            🔥 <a href="https://github.com/web-pentest/DarkVPN">DarkVPN</a> • <a href="https://github.com/web-pentest/TSandCode">TSandCode</a> • <a href="https://github.com/web-pentest/PHPNoFluff">PHPNoFluff</a>
+        <div class="sidebar">
+            <div class="promo-box">
+                <h3>❄️ TPickME</h3>
+                <p>проекты с холодным кодом и горячим сердцем</p>
+                <div class="divider"></div>
+                <a href="https://github.com/web-pentest/DarkVPN">🌑 DarkVPN</a><br>
+                <a href="https://github.com/web-pentest/TSandCode">⚡ TSandCode</a><br>
+                <a href="https://github.com/web-pentest/PHPNoFluff">🐘 PHPNoFluff</a>
+                <div class="divider"></div>
+                <a href="https://github.com/TPickME">🐙 TPickME на GitHub</a>
+            </div>
         </div>
     </div>
     <div class="footer">
-        ❄️ open-source • никакой рекламы • без слежки
+        ❄️ open-source • никакой рекламы • без слежки • код не хранится на сервере
     </div>
 </div>
 <script>
     function createSnow() {
         const snowDiv = document.getElementById('snow');
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 120; i++) {
             const flake = document.createElement('i');
             flake.style.left = Math.random() * 100 + '%';
-            flake.style.width = flake.style.height = Math.random() * 5 + 2 + 'px';
-            flake.style.animationDuration = Math.random() * 4 + 3 + 's';
+            flake.style.width = flake.style.height = Math.random() * 6 + 2 + 'px';
+            flake.style.animationDuration = Math.random() * 5 + 3 + 's';
             flake.style.animationDelay = Math.random() * 5 + 's';
             snowDiv.appendChild(flake);
         }
@@ -239,6 +281,7 @@
             let decoded = decodeURIComponent(escape(atob(encodedCode)));
             codeInput.value = decoded;
             resultDiv.style.display = 'none';
+            hljs.highlightAll();
         } catch(e) {
             console.log('Ошибка декодирования');
         }
